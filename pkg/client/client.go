@@ -117,7 +117,7 @@ func (w *worker) run(ctx context.Context) {
 	startTime := time.Now()
 	u := w.p.GetFloat64(prop.ExpectedValue,prop.ExpectedValueDefault)
 	a := w.p.GetFloat64(prop.StandardDeviation,prop.StandardDeviationDefault)
-	t := w.p.GetFloat64(prop.TimeDelay,prop.TimeDelayDefault)
+	deplay := w.p.GetFloat64(prop.TimeDelay,prop.TimeDelayDefault)
 
 	for w.opCount == 0 || w.opsDone < w.opCount {
 		var err error
@@ -131,9 +131,13 @@ func (w *worker) run(ctx context.Context) {
 				//fmt.Println("doTransaction\n")
 				err = w.workload.DoTransaction(ctx, w.workDB)
 			}
-			t6:=time.Now().Minute()
-            v := 1 / (math.Sqrt(2*math.Pi) * a) * math.Pow(math.E, (-math.Pow((float64(t6) - u), 2)/(2*math.Pow(a, 2))))
-            time.Sleep(time.Duration(1/v*t))
+			timeNow := time.Now().Minute()%20
+            v := 1 / (math.Sqrt(2*math.Pi) * a) * math.Pow(math.E, (-math.Pow((float64(timeNow) - u), 2)/(2*math.Pow(a, 2))))
+			tmp := 1/v*deplay
+			if tmp > 3 * math.Pow(10.0,10) {
+				tmp = 3 * math.Pow(10.0,10)
+			}
+			time.Sleep(time.Duration(tmp))
 		} else {
 			if w.doBatch {
 				err = w.workload.DoBatchInsert(ctx, w.batchSize, w.workDB)
