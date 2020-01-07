@@ -113,4 +113,6 @@ const (
 	StandardDeviationDefault = float64(10)
 	TimeDelay = "timedelay"
 	TimeDelayDefault = float64(100000)	
+	TimePeriod = "timeperiod"
+	TimePeriodDefault = int(20)
 )

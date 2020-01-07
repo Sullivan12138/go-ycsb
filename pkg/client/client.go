@@ -118,6 +118,7 @@ func (w *worker) run(ctx context.Context) {
 	u := w.p.GetFloat64(prop.ExpectedValue,prop.ExpectedValueDefault)
 	a := w.p.GetFloat64(prop.StandardDeviation,prop.StandardDeviationDefault)
 	deplay := w.p.GetFloat64(prop.TimeDelay,prop.TimeDelayDefault)
+	period := w.p.GetInt(prop.TimePeriod,prop.TimePeriodDefault)
 
 	for w.opCount == 0 || w.opsDone < w.opCount {
 		var err error
@@ -131,7 +132,7 @@ func (w *worker) run(ctx context.Context) {
 				//fmt.Println("doTransaction\n")
 				err = w.workload.DoTransaction(ctx, w.workDB)
 			}
-			timeNow := time.Now().Minute()%20
+			timeNow := time.Now().Minute()%period
             v := 1 / (math.Sqrt(2*math.Pi) * a) * math.Pow(math.E, (-math.Pow((float64(timeNow) - u), 2)/(2*math.Pow(a, 2))))
 			tmp := 1/v*deplay
 			if tmp > 3 * math.Pow(10.0,10) {
